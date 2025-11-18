@@ -1,39 +1,39 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 np.random.seed(42)
 n_samples = 1000
 
-# Existing features
-attendance = np.random.uniform(0, 100, n_samples)
-past_marks = np.random.uniform(0, 100, n_samples)
-activities_score = np.random.uniform(0, 10, n_samples)
+# Features
+total_marks = np.random.randint(0, 501, n_samples) # 0 to 500 inclusive
+total_absences = np.random.randint(0, 31, n_samples) # 0 to 30 inclusive
+supplementary_exams = np.random.randint(0, 6, n_samples) # 0 to 5 inclusive
 
-# New features
-total_marks = np.random.uniform(0, 1000, n_samples)  # Total marks out of 1000
-total_absences = np.random.randint(0, 50, n_samples)  # Total absences
-supplementary_exams = np.random.randint(0, 5, n_samples)  # Number of fail subjects
-internet_access = np.random.randint(1, 6, n_samples)  # 1-5 scale
-family_support = np.random.randint(1, 6, n_samples)  # 1-5 scale
+# For categorical yes/no: encode 1 (Yes), 0 (No)
+family_support = np.random.choice([0, 1], n_samples, p=[0.3,0.7])
+extra_curricular = np.random.choice([0, 1], n_samples, p=[0.4,0.6])
+wants_higher_education = np.random.choice([0, 1], n_samples, p=[0.5,0.5])
+internet_access = np.random.choice([0, 1], n_samples, p=[0.2,0.8])
 
-# Risk label: Enhanced logic
+# Define Risk_Label using some logic
 risk_label = (
-    (attendance < 50) | (past_marks < 40) | (activities_score < 3) |
-    (total_absences > 20) | (supplementary_exams > 2) |
-    (internet_access < 3) | (family_support < 3)
+    (total_marks < 250) |
+    (total_absences > 20) |
+    (supplementary_exams > 2) |
+    (family_support == 0) |
+    (internet_access == 0)
 ).astype(int)
 
 df = pd.DataFrame({
-    'Attendance': attendance,
-    'Past_Marks': past_marks,
-    'Activities_Score': activities_score,
-    'Total_Marks': total_marks,
-    'Total_Absences': total_absences,
-    'Supplementary_Exams': supplementary_exams,
-    'Internet_Access': internet_access,
-    'Family_Support': family_support,
-    'Risk_Label': risk_label
+    "total_marks": total_marks,
+    "total_absences": total_absences,
+    "supplementary_exams": supplementary_exams,
+    "family_support": family_support,
+    "extra_curricular": extra_curricular,
+    "wants_higher_education": wants_higher_education,
+    "internet_access": internet_access,
+    "Risk_Label": risk_label
 })
 
-df.to_csv('data/student_data.csv', index=False)
-print("Enhanced dataset generated and saved.")
+df.to_csv("data/student_data.csv", index=False)
+print("Synthetic dataset generated to data/student_data.csv")
